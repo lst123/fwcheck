@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "github.com/lst123/fwcheck/proto";
+
+package fwcheck;
+
+// The greeting service definition.
+service FWCheck {
+  // Sends a greeting
+  rpc CheckPort (ProbRequest) returns (ProbReply) {}
+}
+
+// The request message containing the user's name.
+message ProbRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message ProbReply {
+  string message = 1;
+}
