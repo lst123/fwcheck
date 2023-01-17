@@ -7,7 +7,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/lst123/fwcheck/src/proto"
+	pb "github.com/lst123/fwcheck/internal/protobuf"
 	"google.golang.org/grpc"
 )
 
