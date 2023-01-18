@@ -29,7 +29,7 @@ func connect(host string, port string) (string, error) {
 		defer conn.Close()
 	}
 	fmt.Println("Opened", net.JoinHostPort(host, port))
-	return "opened", nil
+	return "open", nil
 }
 
 func clientCheck() {
