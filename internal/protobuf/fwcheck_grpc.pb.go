@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FWCheckClient interface {
 	// Sends a greeting
-	CheckPort(ctx context.Context, in *ProbRequest, opts ...grpc.CallOption) (*ProbReply, error)
+	CheckTCP(ctx context.Context, in *ProbRequest, opts ...grpc.CallOption) (*ProbReply, error)
 }
 
 type fWCheckClient struct {
@@ -34,9 +34,9 @@ func NewFWCheckClient(cc grpc.ClientConnInterface) FWCheckClient {
 	return &fWCheckClient{cc}
 }
 
-func (c *fWCheckClient) CheckPort(ctx context.Context, in *ProbRequest, opts ...grpc.CallOption) (*ProbReply, error) {
+func (c *fWCheckClient) CheckTCP(ctx context.Context, in *ProbRequest, opts ...grpc.CallOption) (*ProbReply, error) {
 	out := new(ProbReply)
-	err := c.cc.Invoke(ctx, "/fwcheck.FWCheck/CheckPort", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/fwcheck.FWCheck/CheckTCP", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *fWCheckClient) CheckPort(ctx context.Context, in *ProbRequest, opts ...
 // for forward compatibility
 type FWCheckServer interface {
 	// Sends a greeting
-	CheckPort(context.Context, *ProbRequest) (*ProbReply, error)
+	CheckTCP(context.Context, *ProbRequest) (*ProbReply, error)
 	mustEmbedUnimplementedFWCheckServer()
 }
 
@@ -56,8 +56,8 @@ type FWCheckServer interface {
 type UnimplementedFWCheckServer struct {
 }
 
-func (UnimplementedFWCheckServer) CheckPort(context.Context, *ProbRequest) (*ProbReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CheckPort not implemented")
+func (UnimplementedFWCheckServer) CheckTCP(context.Context, *ProbRequest) (*ProbReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckTCP not implemented")
 }
 func (UnimplementedFWCheckServer) mustEmbedUnimplementedFWCheckServer() {}
 
@@ -72,20 +72,20 @@ func RegisterFWCheckServer(s grpc.ServiceRegistrar, srv FWCheckServer) {
 	s.RegisterService(&FWCheck_ServiceDesc, srv)
 }
 
-func _FWCheck_CheckPort_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FWCheck_CheckTCP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ProbRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FWCheckServer).CheckPort(ctx, in)
+		return srv.(FWCheckServer).CheckTCP(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/fwcheck.FWCheck/CheckPort",
+		FullMethod: "/fwcheck.FWCheck/CheckTCP",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FWCheckServer).CheckPort(ctx, req.(*ProbRequest))
+		return srv.(FWCheckServer).CheckTCP(ctx, req.(*ProbRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -98,8 +98,8 @@ var FWCheck_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*FWCheckServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CheckPort",
-			Handler:    _FWCheck_CheckPort_Handler,
+			MethodName: "CheckTCP",
+			Handler:    _FWCheck_CheckTCP_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

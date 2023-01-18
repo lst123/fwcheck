@@ -2,28 +2,47 @@ package main
 
 import (
 	"context"
+	"encoding/binary"
 	"flag"
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
+	"time"
 
 	pb "github.com/lst123/fwcheck/internal/protobuf"
 	"google.golang.org/grpc"
 )
 
 var (
-	port = flag.Int("port", 50051, "The server port")
+	port    = flag.Int("port", 50051, "The server port")
+	minPort = 80
+	maxPort = 65534
 )
 
-// server is used to implement helloworld.GreeterServer.
 type server struct {
 	pb.UnimplementedFWCheckServer
 }
 
-// SayHello implements helloworld.GreeterServer
-func (s *server) CheckPort(ctx context.Context, in *pb.ProbRequest) (*pb.ProbReply, error) {
-	log.Printf("Received: %v", in.GetName())
-	return &pb.ProbReply{Message: "Hello " + in.GetName()}, nil
+func genCheck() *pb.ProbReply {
+	buf := make([]byte, 4)
+	ip := rand.Uint32()
+	binary.LittleEndian.PutUint32(buf, ip)
+	host := fmt.Sprint(net.IP(buf))
+
+	rand.Seed(time.Now().UnixNano())
+	port := fmt.Sprint(rand.Intn(maxPort-minPort+1) + minPort)
+
+	return &pb.ProbReply{Ip: host, Port: port}
+}
+
+func (s *server) CheckTCP(ctx context.Context, in *pb.ProbRequest) (*pb.ProbReply, error) {
+	if in.Result == "none" {
+		return genCheck(), nil
+	} else {
+		log.Printf("Received: %v", in)
+		return &pb.ProbReply{}, nil
+	}
 }
 
 func main() {
